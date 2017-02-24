@@ -3,9 +3,14 @@
 
     function Game (canvas) {
         this.canvas = canvas;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+
         this.bullets = [ ];
 
         this.animation;
+
+        this.triggerSound = new Audio('shot.wav');
     }
 
     Game.prototype.start = function () {
@@ -24,6 +29,13 @@
 
     Game.prototype.triggerBullet = function (event) {
         this.createBullet(event.clientX, event.clientY);
+
+        if (!this.triggerSound.paused) {
+            this.triggerSound.pause();
+        }
+
+        this.triggerSound.currentTime = 0;
+        this.triggerSound.play();
     }
 
     Game.prototype.draw = function () {
@@ -33,10 +45,25 @@
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         var i,
-            totalBullets = this.bullets.length;
+            totalBullets = this.bullets.length,
+            infoLength = 0;
 
         for (i = 0; i < totalBullets; i++) {
             this.bullets[i].draw(this.canvas, ctx);
+
+            var info = this.bullets[i].info;
+            if (info) {
+                var text = info,
+                    x = this.canvas.clientWidth,
+                    y = this.canvas.clientHeight;
+
+                var textX = x - ctx.measureText(text).width - 10,
+                    textY = y - 10 - (15 * infoLength);
+
+                ctx.fillText(text, textX, textY);
+
+                infoLength++;
+            }
         }
 
         this.animation = window.requestAnimationFrame(this.draw.bind(this));
@@ -44,6 +71,21 @@
 
     Game.prototype.createBullet = function (positionX, positionY) {
         var bullet = new Bullet(positionX, positionY);
+
+        // var ctx = this.canvas.getContext('2d');
+        // var text = '[' + bullet.x + ', ' + bullet.y + ']',
+        //     x = this.canvas.clientWidth,
+        //     y = this.canvas.clientHeight;
+
+        // var textX = x - ctx.measureText(text).width - 10,
+        //     textY = y - 10;
+
+        // ctx.fillText(text, textX, textY);
+        bullet.info = 'Triggered at [' + bullet.x + ', ' + bullet.y + ']';
+        setTimeout(function () {
+            delete bullet.info;
+        }, 1000);
+
         this.bullets.push(bullet);
 
         // console.log(this.bullets);
@@ -115,6 +157,11 @@
             //     }
             // }
             if (this.isTouchingEdgesOf(canvas)) {
+                this.info = 'Hit edge at [' + Math.round(this.x) + ', ' + Math.round(this.y) + ']';
+                setTimeout(function () {
+                    delete this.info;
+                }.bind(this), 1000);
+
                 this.alive = false;
             }
 
@@ -146,13 +193,13 @@
     game.start();
 
 
-    document.querySelector('#controls #pauseButton').addEventListener('click', function () {
-        game.pause();
-    });
+    // document.querySelector('#controls #pauseButton').addEventListener('click', function () {
+    //     game.pause();
+    // });
 
-    document.querySelector('#controls #resumeButton').addEventListener('click', function () {
-        game.start();
-    });
+    // document.querySelector('#controls #resumeButton').addEventListener('click', function () {
+    //     game.start();
+    // });
 
 
 
