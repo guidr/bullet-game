@@ -1,0 +1,23 @@
+{
+  "name": "bullet-game",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/.bin/uglifyjs ./src/game.js ./src/bullet.js --compress --mangle --screw-ie8 --output ./bullet-game.min.js",
+    "start": "./node_modules/.bin/nodemon --watch ./src/ --exec \"npm run build\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guidr/bullet-game.git"
+  },
+  "author": "Guilherme Dalla Rosa <gui_dr@msn.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guidr/bullet-game/issues"
+  },
+  "homepage": "https://github.com/guidr/bullet-game#readme",
+  "devDependencies": {
+    "nodemon": "^1.11.0",
+    "uglify-js": "^2.7.5"
+  }
+}
